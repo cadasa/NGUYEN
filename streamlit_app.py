@@ -46,7 +46,7 @@ def main():
     st.sidebar.header("App Selection")
     goto = st.sidebar.radio('Go to:',['NGUYEN=MC2', 'I DRAW NGUYEN'])
     if goto == 'I DRAW NGUYEN':
-        with st.beta_container():
+        with st.container():
             st.title("I DRAW NGUYEN: Interactive Depth Residual Analysis With NGUYEN")
             st.header("Visualization App for QC & editing depth misties(Delta-Z) between horizons and well tops")
             st.subheader('Parameter Selections:')
@@ -54,7 +54,7 @@ def main():
                 time.sleep(1)
             idrawu()
     else:
-        with st.beta_container():
+        with st.container():
             st.title('NGUYEN=MC2: Non-Gaussian UncertaintY EstimatioN by MCMC*')
             st.header("V0,K and Uncertainty Estimation using MCMC - Markov chain Monte Carlo method")
             #CSS to display content correctly
@@ -105,13 +105,13 @@ def MCMC(zi,vi,ndim,nwalkers,niter):
     return sampler
 
 def v0kmcmc():
-    col1, col2, col3, col4 = st.beta_columns([2,2,2,4])
+    col1, col2, col3, col4 = st.columns([2,2,2,4])
     input = col1.selectbox('Select Input Data:',['Synthetic Data', 'Real Data'])
     col2.text('Expand to change parameters for:')
     lqr = col3.checkbox('Least-Squares Regression?', True)
     mlr = col3.checkbox('Max.-Likelihood Regression?', True)
     col4.text('Expand to change parameters and run:')
-    with col4.beta_expander('NGUYEN=MC2'):
+    with col4.expander('NGUYEN=MC2'):
 #            with col3:
         niter = st.number_input('Enter niter',1000,5000,5000,1000)
 #            ndim = st.number_input('Enter ndim',1,3,3,1)
@@ -129,7 +129,7 @@ def v0kmcmc():
                             src="https://observablehq.com/embed/@cadasa/linear-regression?cell=chart" title="Snapshot of the Simulation"></iframe>
                             """, unsafe_allow_html=True)
     if input == 'Synthetic Data':
-        with col2.beta_expander('Synthetic Data'):
+        with col2.expander('Synthetic Data'):
 #            norm = st.checkbox('Gaussian uncertainty?',False)
             k = st.slider('Slide to select k:',-0.2, 1.0, 0.2,0.01)
             v0 = st.slider('Slide to select V0(m/s):', 1500.0, 5000.0, 2000.0)  #@param {type: "number"}
@@ -139,7 +139,7 @@ def v0kmcmc():
         zi, vi, z_scale = generate_vel_data(k,v0,sigma,z,n)
         Layer_name = 'SYNTHETIC'
     if input == 'Real Data':
-        with col2.beta_expander('Real Data'):
+        with col2.expander('Real Data'):
             file = st.file_uploader('Choose File')
             if not file:
                 st.warning('Please upload a file.')
@@ -214,7 +214,7 @@ def v0kmcmc():
                 tickfont_size=12)
                 )
 
-    with st.beta_expander('View Chart: ', True):
+    with st.expander('View Chart: ', True):
         st.plotly_chart(fig1,use_container_width=True)
 #        if st.button('CREATE HTML REPORT?'):
 #        fig1.write_html("fig1.html")
@@ -279,12 +279,12 @@ def idrawu():
     dZ,total_wells = read_data()
     wellnames = dZ.drop_duplicates(subset = ['well_name'])['well_name'].to_list()
     current_wells = len(wellnames)
-    col1, _, col3, _, _ = st.beta_columns(5)
+    col1, _, col3, _, _ = st.columns(5)
     outlier = col3.checkbox("Remove Outliers?", True)
     multihor = col1.checkbox("Multiple Horizon?", True)
 
 #   saveguard for empty selection
-    col1, _, col3, col4, _ = st.beta_columns(5)
+    col1, _, col3, col4, _ = st.columns(5)
     if multihor:
         horizons = dZ.drop_duplicates(subset = ['hor_names'])['hor_names'].to_list()
         horizon = col1.selectbox("Choose Horizon", horizons)
@@ -294,7 +294,7 @@ def idrawu():
         current_wells = len(wellnames)
 
     st.sidebar.header("Well selection")
-    with st.sidebar.beta_expander('👉 Expand to see well list:', False):
+    with st.sidebar.expander('👉 Expand to see well list:', False):
         multiselection = st.multiselect("Select/Deselect well(s)", wellnames, default=wellnames)
     dZ = dZ[dZ["well_name"].isin(multiselection)]
     current_wells = len(dZ.drop_duplicates(subset = ['well_name'])['well_name'].to_list())
@@ -310,7 +310,7 @@ def idrawu():
 
     if outlier:
         st.sidebar.header("Wells excl. by outlier editing")
-        sb_excl_cont = st.sidebar.beta_container()
+        sb_excl_cont = st.sidebar.container()
         rem_type = col3.radio("Removal Type:", ["Absolute value", "Relative value"])
         if rem_type == 'Absolute value':
             abs_outl = col4.slider("Threshold in meters", 0.0, 200.0, 200.0, 1.0)
@@ -463,7 +463,7 @@ def idrawu():
 
     """, unsafe_allow_html=True)
 
-    col1, _ = st.beta_columns([9, 2])
+    col1, _ = st.columns([9, 2])
     col1.info("""
         Data are from 'VELMOD' open project in the Netherlands - see my [Map](https://cadasa.github.io/lithostrat_nl/)
         """
